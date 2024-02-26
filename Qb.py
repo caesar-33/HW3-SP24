@@ -1,77 +1,74 @@
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
+#ChatGPT was used to help solve this problem
 
-def func1(x):
+
+def equation1(x):
     """
-        Define the first function based on the given equation.
+    Compute the value of the first equation: x - 3 * cos(x).
 
-        Parameters:
-        - x (float or array-like): The input value(s) for the function.
+    Parameters:
+    x (float or array_like): Input values.
 
-        Returns:
-        - The output of the function x - 3*cos(x).
-        """
+    Returns:
+    float or array_like: Value of the equation at the given input.
+    """
     return x - 3 * np.cos(x)
 
-def func2(x):
+def equation2(x):
     """
-        Define the second function based on the given equation.
+    Compute the value of the second equation: cos(2x) * x^3.
 
-        Parameters:
-        - x (float or array-like): The input value(s) for the function.
+    Parameters:
+    x (float or array_like): Input values.
 
-        Returns:
-        - The output of the function cos(2*x)*x**3.
-        """
-    return np.cos(2 * x) * x**3
-
-def find_intersection(x):
+    Returns:
+    float or array_like: Value of the equation at the given input.
     """
-        Calculate the difference between the two defined functions to find intersection points.
+    return np.cos(2*x) * x**3
 
-        Parameters:
-        - x (float): The input value for the functions.
+# Define the range of x values for plotting
+x_values = np.linspace(-10, 10, 400)
 
-        Returns:
-        - The difference between func1(x) and func2(x).
-        """
-    return func1(x) - func2(x)
+# Compute the y values for each equation
+y_values_eq1 = equation1(x_values)
+y_values_eq2 = equation2(x_values)
 
-# Finding roots for the individual functions near 0
-root_func1 = fsolve(func1, 0.0)
-root_func2 = fsolve(func2, 0.0)
+# Find the roots of equation 1
+initial_guess_eq1 = np.array([-3.-2, -1, 0, 1, 2])
+roots_eq1 = fsolve(equation1, initial_guess_eq1)
 
-# Setting up a range of initial guesses to find intersection points
-initial_guesses = np.linspace(-15, 15, 300)
-intersection_points = []
-
-for guess in initial_guesses:
-    x, infodict, ier, mesg = fsolve(find_intersection, guess, full_output=True)
-    # Check if the solution converged and the solution is not already in the list
-    if ier == 1 and not x[0] in intersection_points:
-        intersection_points.append(x[0])
-
-# Filtering unique solutions by rounding and taking the set to remove near-duplicates
-intersection_points = set(np.round(intersection_points, decimals=5))
+# Find the roots of equation 2
+initial_guess_eq2 = np.array([-2, -1, 0, 1, 2])
+roots_eq2 = fsolve(equation2, initial_guess_eq2)
 
 # Plotting
-x = np.linspace(-15, 15, 400)
-y1 = func1(x)
-y2 = func2(x)
+plt.figure(figsize=(12, 6))  # Adjust figure size
 
-plt.figure(figsize=(10, 6))
-plt.plot(x, y1, label='x - 3*cos(x)')
-plt.plot(x, y2, label='cos(2*x)*x^3')
-plt.scatter(list(intersection_points), [func1(x) for x in intersection_points], color='red', zorder=5)
-plt.title('Graphs of func1 and func2 with Intersection Points')
+# Plot equation 1
+plt.plot(x_values, y_values_eq1, label='x - 3 * cos(x)')
+
+# Plot equation 2
+plt.plot(x_values, y_values_eq2, label='cos(2x) * x^3')
+
+# Mark the roots of equation 1
+plt.scatter(roots_eq1, equation1(roots_eq1), color='red', label='Roots of Equation 1')
+
+# Mark the roots of equation 2
+plt.scatter(roots_eq2, equation2(roots_eq2), color='blue', label='Roots of Equation 2')
+
+plt.axhline(y=0, color='black', linewidth=0.5)  # Add x-axis for reference
+
+plt.title('Intersection of Two Equations')
 plt.xlabel('x')
 plt.ylabel('y')
-plt.legend()
 plt.grid(True)
-plt.show()
+plt.legend()
 
-# Output the roots and intersection points
-print("Root of func1 (x - 3*cos(x) = 0):", root_func1)
-print("Root of func2 (cos(2*x)*x^3 = 0):", root_func2)
-print("Intersection points:", intersection_points)
+# Set x-axis limits
+plt.xlim(-10, 10)  # Adjust to make it easier to view intersections by making the x-axis smaller
+plt.ylim(-500, 500)  # Adjust to make it easier to view intersections by making the y-axis smaller
+
+
+plt.show()
